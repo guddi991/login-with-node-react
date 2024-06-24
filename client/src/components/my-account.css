@@ -1,0 +1,56 @@
+
+.account {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    max-width: 400px;
+    margin: 0 auto;
+    margin-top: 50px;
+  }
+  
+  
+.user-details {
+    border: 1px solid beige;
+    margin: 20px;
+    padding-left: 50px;
+    padding-right: 50px;
+    text-align: center;
+    padding: 30px;
+    background-color: gainsboro;
+}
+
+  .account h1, .account h2 {
+    text-align: center;
+  }
+  
+  .account div {
+    margin-bottom: 20px;
+  }
+  
+  .account label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .account input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .account button {
+    width: 100%;
+    padding: 10px;
+    background-color: #28a745;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .account button:hover {
+    background-color: #218838;
+  }
+  

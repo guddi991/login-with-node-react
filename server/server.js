@@ -14,6 +14,22 @@ const PORT = process.env.PORT
 app.use(cors())
 app.use(bodyparser.json())
 
+// middleware for authentication of Token
+
+function authenticateToken(req, res, next){
+    const authHeader = req.headers['authorization']
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if(token == null) return res.sendStatus(401);
+    jwt.verify(token, process.env.JWT_SECRET_KEY, (err, user)=>{
+        if(err) return res.sendStatus(401);
+        req.user = user;
+        next();
+    });
+}  
+
+
+
 // DB connection
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -83,6 +99,44 @@ app.post('/login', (req,res)=>{
 
     });
 });
+
+
+// logout
+app.post('/logout',authenticateToken, (req,res)=>{
+    authHeader = req.headers['authorization'];
+    token = authHeader && authHeader.split(' ')[1]
+
+    if(token){
+        tokenBlacklist.push(token)
+    }
+    res.status(200).json({ message: "Logout Successfully."})
+    
+})
+
+// User Details
+app.get('/my-account', authenticateToken, (req,res)=>{
+    const userID = req.user.userID
+    db.query('SELECT * from users WHERE id = (?)',[userID], async (err,result)=>{
+        if (err) return res.status(500).json({ error: err})
+        if(result.length===0) return res.status(401).json({message:"User Not Found."})
+
+        res.status(200).json(result[0])
+    });
+});  
+
+// Update Password
+app.post('/update-password', authenticateToken, async (req,res)=>{
+    const userID = req.user.userID;
+    const { password } = req.body;
+
+    const hashPassword = await bcrypt.hash(password,10)
+    db.query('UPDATE users SET password=? WHERE id =?',[hashPassword, userID],(err,result)=>{
+        if(err) return res.status(501).json({ Error: err})
+        
+        res.status(200).json({ message : 'Password Updated Successfully.'})
+    })
+})
+
 
 // server connection
 app.listen(PORT,()=>{
