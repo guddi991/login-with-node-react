@@ -9,13 +9,45 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken');
 const app = express()
 const PORT = process.env.PORT
+const nodemailer = require('nodemailer')
 
 // middlewares
 app.use(cors())
 app.use(bodyparser.json())
 
-// middleware for authentication of Token
+// create a transporter
+const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    service: 'gamil',
+    auth: {
+        user: process.env.SMTP_EMAIL,
+        pass: process.env.SMPT_PASSWORD
+    }
+})
 
+// send mail Function
+function sendWelcomeMail(email,username){
+    const mailOptions = {
+        from: process.env.SMTP_EMAIL,
+        to: "guddifreelance@gmail.com",
+        subject: 'User Created !',
+        text: `Hello ${username},\n\nThank you for signing up! We are excited to have you on board.\n\nBest regards,\nYour Team`
+    }
+
+    transporter.sendMail(mailOptions, (error,info)=>{
+        //console.log('INFO : '+info.response)
+        if(error){
+            console.error('Error sending mail ',error)
+        }else{
+            console.log('Mail send: ',info.response)
+        }
+    })
+}
+
+
+
+// middleware for authentication of Token
 function authenticateToken(req, res, next){
     const authHeader = req.headers['authorization']
     const token = authHeader && authHeader.split(' ')[1];
@@ -27,7 +59,6 @@ function authenticateToken(req, res, next){
         next();
     });
 }  
-
 
 
 // DB connection
@@ -68,6 +99,9 @@ app.post('/signup', async (req, res) => {
                     console.error("Error inserting into database:", err);
                     return res.status(500).send('Internal Server Error');
                 }
+
+                // SMTP
+                sendWelcomeMail(email,username)
                 res.status(201).send('User created successfully');
             });
         } catch (hashError) {
