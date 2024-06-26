@@ -30,7 +30,7 @@ const transporter = nodemailer.createTransport({
 function sendWelcomeMail(email,username){
     const mailOptions = {
         from: process.env.SMTP_EMAIL,
-        to: "guddifreelance@gmail.com",
+        to: email,
         subject: 'User Created !',
         text: `Hello ${username},\n\nThank you for signing up! We are excited to have you on board.\n\nBest regards,\nYour Team`
     }
@@ -44,7 +44,6 @@ function sendWelcomeMail(email,username){
         }
     })
 }
-
 
 
 // middleware for authentication of Token
